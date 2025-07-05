@@ -58,7 +58,7 @@ export default {
 				'zen-gradient-dark': 'var(--gradient-zen-dark)'
 			},
 			fontFamily: {
-				'zen': ['Inter', 'system-ui', 'sans-serif']
+				'zen': ['Poppins', 'system-ui', 'sans-serif']
 			},
 			transitionTimingFunction: {
 				'zen': 'cubic-bezier(0.25, 0.8, 0.25, 1)'

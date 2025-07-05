@@ -1,6 +1,7 @@
 import { FocusTimer } from '@/components/FocusTimer';
 import { TodoPanel } from '@/components/TodoPanel';
 import { NotesSection } from '@/components/NotesSection';
+import { Settings } from '@/components/Settings';
 import { DarkModeToggle } from '@/components/DarkModeToggle';
 import { AmbientToggle } from '@/components/AmbientToggle';
 
@@ -19,6 +20,10 @@ const Index = () => {
         <DarkModeToggle />
         <AmbientToggle />
       </div>
+
+      {/* Side controls */}
+      <Settings />
+      <NotesSection />
 
       {/* Main content */}
       <div className="relative z-10 flex flex-col items-center justify-center min-h-screen px-6 py-12">
@@ -41,11 +46,6 @@ const Index = () => {
           {/* Todo Panel */}
           <div className="mb-8">
             <TodoPanel />
-          </div>
-
-          {/* Notes Section */}
-          <div className="mb-8">
-            <NotesSection />
           </div>
 
           {/* Footer */}
