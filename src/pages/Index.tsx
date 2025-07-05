@@ -21,9 +21,12 @@ const Index = () => {
         <AmbientToggle />
       </div>
 
-      {/* Side controls */}
-      <Settings />
-      <NotesSection />
+      {/* Right side controls */}
+      <div className="fixed right-6 top-1/2 -translate-y-1/2 z-20 flex flex-col gap-4">
+        <Settings />
+        <TodoPanel />
+        <NotesSection />
+      </div>
 
       {/* Main content */}
       <div className="relative z-10 flex flex-col items-center justify-center min-h-screen px-6 py-12">
@@ -43,10 +46,6 @@ const Index = () => {
             <FocusTimer />
           </div>
 
-          {/* Todo Panel */}
-          <div className="mb-8">
-            <TodoPanel />
-          </div>
 
           {/* Footer */}
           <div className="text-center pt-8">

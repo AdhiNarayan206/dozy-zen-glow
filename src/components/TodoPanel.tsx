@@ -2,7 +2,8 @@ import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Checkbox } from '@/components/ui/checkbox';
-import { Plus, X } from 'lucide-react';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { Plus, X, ListTodo } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 interface Todo {
@@ -11,12 +12,7 @@ interface Todo {
   completed: boolean;
 }
 
-interface TodoPanelProps {
-  className?: string;
-}
-
-export function TodoPanel({ className }: TodoPanelProps) {
-  const [isOpen, setIsOpen] = useState(false);
+export function TodoPanel() {
   const [todos, setTodos] = useState<Todo[]>([]);
   const [newTodo, setNewTodo] = useState('');
 
@@ -51,48 +47,32 @@ export function TodoPanel({ className }: TodoPanelProps) {
   };
 
   return (
-    <div className={className}>
-      {/* Toggle button */}
-      <Button
-        onClick={() => setIsOpen(!isOpen)}
-        variant="outline"
-        size="sm"
-        className="zen-transition rounded-full font-zen mb-4"
-      >
-        <Plus className="w-4 h-4 mr-2" />
-        Tasks
-      </Button>
-
-      {/* Todo panel */}
-      <div
-        className={cn(
-          "zen-transition overflow-hidden",
-          isOpen 
-            ? "max-h-96 opacity-100" 
-            : "max-h-0 opacity-0"
-        )}
-      >
-        <div className="bg-card rounded-2xl p-6 zen-shadow border border-border">
-          <div className="flex items-center justify-between mb-4">
-            <h3 className="text-lg font-medium font-zen text-card-foreground">Tasks</h3>
-            <Button
-              onClick={() => setIsOpen(false)}
-              variant="ghost"
-              size="sm"
-              className="rounded-full h-8 w-8 p-0"
-            >
-              <X className="w-4 h-4" />
-            </Button>
-          </div>
-
+    <Dialog>
+      <DialogTrigger asChild>
+        <Button
+          variant="zen"
+          size="icon"
+          className="rounded-full h-12 w-12 zen-shadow hover:scale-105 group relative"
+        >
+          <ListTodo className="w-5 h-5" />
+          <span className="absolute right-full mr-3 px-2 py-1 bg-popover text-popover-foreground text-xs font-zen rounded-md opacity-0 group-hover:opacity-100 zen-transition whitespace-nowrap pointer-events-none">
+            Tasks
+          </span>
+        </Button>
+      </DialogTrigger>
+      <DialogContent className="bg-card border border-border zen-shadow max-w-md">
+        <DialogHeader>
+          <DialogTitle className="font-zen text-lg">Tasks</DialogTitle>
+        </DialogHeader>
+        <div className="space-y-4">
           {/* Add new todo */}
-          <div className="flex gap-2 mb-4">
+          <div className="flex gap-2">
             <Input
               value={newTodo}
               onChange={(e) => setNewTodo(e.target.value)}
               onKeyPress={handleKeyPress}
               placeholder="Add a new task..."
-              className="zen-transition rounded-xl font-zen"
+              className="zen-transition rounded-xl font-zen border-0 bg-secondary/30 focus:bg-secondary/50"
             />
             <Button
               onClick={addTodo}
@@ -104,7 +84,7 @@ export function TodoPanel({ className }: TodoPanelProps) {
           </div>
 
           {/* Todo list */}
-          <div className="space-y-3 max-h-48 overflow-y-auto">
+          <div className="space-y-3 max-h-64 overflow-y-auto">
             {todos.length === 0 ? (
               <p className="text-muted-foreground text-sm text-center py-4 font-zen">
                 No tasks yet. Add one above!
@@ -143,7 +123,7 @@ export function TodoPanel({ className }: TodoPanelProps) {
             )}
           </div>
         </div>
-      </div>
-    </div>
+      </DialogContent>
+    </Dialog>
   );
 }
