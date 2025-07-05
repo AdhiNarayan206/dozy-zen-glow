@@ -2,41 +2,50 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Definition of the design system. All colors, gradients, fonts, etc should be defined here. 
-All colors MUST be HSL.
-*/
+/* DOZY Design System - Zen, Calm, Minimal */
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
+    /* Zen-inspired calm colors */
+    --background: 210 20% 98%;
+    --foreground: 200 15% 20%;
 
-    --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
+    --card: 210 25% 96%;
+    --card-foreground: 200 15% 20%;
 
-    --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
+    --popover: 210 25% 96%;
+    --popover-foreground: 200 15% 20%;
 
-    --primary: 222.2 47.4% 11.2%;
-    --primary-foreground: 210 40% 98%;
+    /* Soft sage green primary */
+    --primary: 150 25% 45%;
+    --primary-foreground: 210 20% 98%;
 
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
+    /* Warm beige secondary */
+    --secondary: 45 30% 88%;
+    --secondary-foreground: 200 15% 25%;
 
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
+    /* Soft muted tones */
+    --muted: 210 20% 92%;
+    --muted-foreground: 200 10% 50%;
 
-    --accent: 210 40% 96.1%;
-    --accent-foreground: 222.2 47.4% 11.2%;
+    /* Gentle accent */
+    --accent: 170 20% 85%;
+    --accent-foreground: 200 15% 25%;
 
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
+    /* Soft warning/destructive */
+    --destructive: 15 65% 65%;
+    --destructive-foreground: 210 20% 98%;
 
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 222.2 84% 4.9%;
+    --border: 210 15% 88%;
+    --input: 210 20% 94%;
+    --ring: 150 25% 45%;
 
     --radius: 0.5rem;
+
+    /* Zen gradients and effects */
+    --gradient-zen: linear-gradient(135deg, hsl(150 25% 45% / 0.1), hsl(170 20% 85% / 0.1));
+    --transition-zen: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+    --shadow-zen: 0 8px 32px hsl(150 25% 45% / 0.1);
 
     --sidebar-background: 0 0% 98%;
 
@@ -56,41 +65,86 @@ All colors MUST be HSL.
   }
 
   .dark {
-    --background: 222.2 84% 4.9%;
-    --foreground: 210 40% 98%;
+    /* Dark zen theme */
+    --background: 210 25% 8%;
+    --foreground: 210 15% 92%;
 
-    --card: 222.2 84% 4.9%;
-    --card-foreground: 210 40% 98%;
+    --card: 210 20% 12%;
+    --card-foreground: 210 15% 92%;
 
-    --popover: 222.2 84% 4.9%;
-    --popover-foreground: 210 40% 98%;
+    --popover: 210 20% 12%;
+    --popover-foreground: 210 15% 92%;
 
-    --primary: 210 40% 98%;
-    --primary-foreground: 222.2 47.4% 11.2%;
+    /* Soft sage green (slightly brighter for dark) */
+    --primary: 150 30% 55%;
+    --primary-foreground: 210 25% 8%;
 
-    --secondary: 217.2 32.6% 17.5%;
-    --secondary-foreground: 210 40% 98%;
+    /* Warm muted secondary */
+    --secondary: 45 15% 20%;
+    --secondary-foreground: 210 15% 85%;
 
-    --muted: 217.2 32.6% 17.5%;
-    --muted-foreground: 215 20.2% 65.1%;
+    --muted: 210 15% 18%;
+    --muted-foreground: 210 10% 65%;
 
-    --accent: 217.2 32.6% 17.5%;
-    --accent-foreground: 210 40% 98%;
+    --accent: 170 15% 25%;
+    --accent-foreground: 210 15% 85%;
 
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 210 40% 98%;
+    --destructive: 15 55% 55%;
+    --destructive-foreground: 210 15% 92%;
 
-    --border: 217.2 32.6% 17.5%;
-    --input: 217.2 32.6% 17.5%;
-    --ring: 212.7 26.8% 83.9%;
-    --sidebar-background: 240 5.9% 10%;
-    --sidebar-foreground: 240 4.8% 95.9%;
-    --sidebar-primary: 224.3 76.3% 48%;
-    --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 240 3.7% 15.9%;
-    --sidebar-accent-foreground: 240 4.8% 95.9%;
-    --sidebar-border: 240 3.7% 15.9%;
-    --sidebar-ring: 217.2 91.2% 59.8%;
+    --border: 210 15% 22%;
+    --input: 210 20% 16%;
+    --ring: 150 30% 55%;
+
+    /* Zen gradients */
+    --gradient-zen: linear-gradient(135deg, hsl(150 25% 45% / 0.1), hsl(170 20% 85% / 0.1));
+    --gradient-zen-dark: linear-gradient(135deg, hsl(150 30% 55% / 0.1), hsl(170 15% 25% / 0.1));
+    
+    /* Ambient animations */
+    --transition-zen: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+    --shadow-zen: 0 8px 32px hsl(150 25% 45% / 0.1);
+    --shadow-zen-dark: 0 8px 32px hsl(150 30% 55% / 0.1);
+  }
+}
+
+/* Zen utilities */
+@layer utilities {
+  .zen-gradient {
+    background: var(--gradient-zen);
+  }
+  
+  .zen-gradient-dark {
+    background: var(--gradient-zen-dark);
+  }
+  
+  .zen-transition {
+    transition: var(--transition-zen);
+  }
+  
+  .zen-shadow {
+    box-shadow: var(--shadow-zen);
+  }
+  
+  .zen-shadow-dark {
+    box-shadow: var(--shadow-zen-dark);
+  }
+  
+  .ambient-float {
+    animation: float 6s ease-in-out infinite;
+  }
+  
+  @keyframes float {
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(-10px); }
+  }
+  
+  @keyframes pulse-zen {
+    0%, 100% { opacity: 0.8; }
+    50% { opacity: 1; }
+  }
+  
+  .pulse-zen {
+    animation: pulse-zen 3s ease-in-out infinite;
   }
 }
 

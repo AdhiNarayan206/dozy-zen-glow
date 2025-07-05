@@ -51,17 +51,21 @@ export default {
 				card: {
 					DEFAULT: 'hsl(var(--card))',
 					foreground: 'hsl(var(--card-foreground))'
-				},
-				sidebar: {
-					DEFAULT: 'hsl(var(--sidebar-background))',
-					foreground: 'hsl(var(--sidebar-foreground))',
-					primary: 'hsl(var(--sidebar-primary))',
-					'primary-foreground': 'hsl(var(--sidebar-primary-foreground))',
-					accent: 'hsl(var(--sidebar-accent))',
-					'accent-foreground': 'hsl(var(--sidebar-accent-foreground))',
-					border: 'hsl(var(--sidebar-border))',
-					ring: 'hsl(var(--sidebar-ring))'
 				}
+			},
+			backgroundImage: {
+				'zen-gradient': 'var(--gradient-zen)',
+				'zen-gradient-dark': 'var(--gradient-zen-dark)'
+			},
+			fontFamily: {
+				'zen': ['Inter', 'system-ui', 'sans-serif']
+			},
+			transitionTimingFunction: {
+				'zen': 'cubic-bezier(0.25, 0.8, 0.25, 1)'
+			},
+			boxShadow: {
+				'zen': 'var(--shadow-zen)',
+				'zen-dark': 'var(--shadow-zen-dark)'
 			},
 			borderRadius: {
 				lg: 'var(--radius)',
