@@ -1,15 +1,38 @@
 
+import { useState, useEffect } from 'react';
 import { FocusTimer } from '@/components/FocusTimer';
 import { TodoPanel } from '@/components/TodoPanel';
 import { NotesSection } from '@/components/NotesSection';
 import { Settings } from '@/components/Settings';
 import { DarkModeToggle } from '@/components/DarkModeToggle';
 import { AmbientToggle } from '@/components/AmbientToggle';
-import { Dashboard } from '@/components/Dashboard';
+import { DashboardToggle } from '@/components/DashboardToggle';
+import { WelcomeModal } from '@/components/WelcomeModal';
 
 const Index = () => {
+  const [userName, setUserName] = useState<string | null>(null);
+  const [showWelcome, setShowWelcome] = useState(false);
+
+  useEffect(() => {
+    const storedName = localStorage.getItem('dozy-user-name');
+    if (storedName) {
+      setUserName(storedName);
+    } else {
+      setShowWelcome(true);
+    }
+  }, []);
+
+  const handleNameSubmit = (name: string) => {
+    localStorage.setItem('dozy-user-name', name);
+    setUserName(name);
+    setShowWelcome(false);
+  };
+
   return (
     <div className="min-h-screen bg-background zen-gradient relative overflow-hidden">
+      {/* Welcome Modal */}
+      <WelcomeModal isOpen={showWelcome} onNameSubmit={handleNameSubmit} />
+
       {/* Ambient background elements */}
       <div className="absolute inset-0 opacity-20">
         <div className="absolute top-20 left-10 w-40 h-40 bg-primary/8 rounded-full blur-3xl ambient-float"></div>
@@ -17,8 +40,8 @@ const Index = () => {
         <div className="absolute top-1/2 left-1/3 w-24 h-24 bg-secondary/8 rounded-full blur-xl ambient-float" style={{ animationDelay: '4s' }}></div>
       </div>
 
-      {/* Dashboard - Left side */}
-      <Dashboard />
+      {/* Dashboard Toggle - Left side */}
+      {userName && <DashboardToggle userName={userName} />}
 
       {/* Header controls */}
       <div className="absolute top-6 right-6 flex gap-2 z-10">
