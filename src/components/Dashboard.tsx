@@ -88,7 +88,7 @@ export function Dashboard() {
   };
 
   return (
-    <div className="fixed left-6 top-6 z-20 w-80 space-y-4">
+    <div className="w-80 space-y-4">
       <Card className="bg-card/95 backdrop-blur-sm border-border/50 zen-shadow">
         <CardHeader className="pb-3">
           <CardTitle className="text-lg font-zen flex items-center gap-2">
