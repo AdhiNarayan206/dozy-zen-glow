@@ -10,6 +10,7 @@ import { useToast } from '@/hooks/use-toast';
 
 export function Settings() {
   const { toast } = useToast();
+  const [open, setOpen] = useState(false);
   
   // Load settings from localStorage or use defaults
   const loadSettings = () => {
@@ -31,6 +32,38 @@ export function Settings() {
   const [longBreak, setLongBreak] = useState([settings.longBreak]);
   const [wallpaper, setWallpaper] = useState(settings.wallpaper);
 
+  const applyWallpaperTheme = (wallpaperType: string) => {
+    const root = document.documentElement;
+    
+    switch (wallpaperType) {
+      case 'forest':
+        root.style.setProperty('--primary', '120 40% 35%');
+        root.style.setProperty('--primary-foreground', '120 10% 95%');
+        root.style.setProperty('--accent', '120 20% 80%');
+        break;
+      case 'ocean':
+        root.style.setProperty('--primary', '200 60% 45%');
+        root.style.setProperty('--primary-foreground', '200 10% 95%');
+        root.style.setProperty('--accent', '200 30% 85%');
+        break;
+      case 'sunset':
+        root.style.setProperty('--primary', '25 70% 55%');
+        root.style.setProperty('--primary-foreground', '25 10% 95%');
+        root.style.setProperty('--accent', '25 40% 85%');
+        break;
+      case 'minimal':
+        root.style.setProperty('--primary', '0 0% 50%');
+        root.style.setProperty('--primary-foreground', '0 0% 98%');
+        root.style.setProperty('--accent', '0 0% 90%');
+        break;
+      default: // default zen
+        root.style.setProperty('--primary', '150 25% 45%');
+        root.style.setProperty('--primary-foreground', '210 20% 98%');
+        root.style.setProperty('--accent', '170 20% 85%');
+        break;
+    }
+  };
+
   const handleSaveSettings = () => {
     const newSettings = {
       focusTime: focusTime[0],
@@ -42,8 +75,14 @@ export function Settings() {
     // Save to localStorage
     localStorage.setItem('dozy-settings', JSON.stringify(newSettings));
     
+    // Apply wallpaper theme
+    applyWallpaperTheme(wallpaper);
+    
     // Update state
     setSettings(newSettings);
+    
+    // Dispatch storage event to notify other components
+    window.dispatchEvent(new Event('storage'));
     
     // Show success toast
     toast({
@@ -51,12 +90,15 @@ export function Settings() {
       description: "Your preferences have been saved successfully.",
     });
 
+    // Close the dialog
+    setOpen(false);
+
     console.log('Settings saved:', newSettings);
   };
 
   return (
     <div>
-      <Dialog>
+      <Dialog open={open} onOpenChange={setOpen}>
         <DialogTrigger asChild>
           <Button
             variant="zen"

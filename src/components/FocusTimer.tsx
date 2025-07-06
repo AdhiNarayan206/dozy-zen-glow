@@ -35,14 +35,26 @@ export function FocusTimer({ className }: FocusTimerProps) {
     const handleStorageChange = () => {
       const newSettings = loadSettings();
       setSettings(newSettings);
+      
+      // Only update time if timer is not active
       if (!isActive) {
-        setTimeLeft(newSettings.focusTime * 60);
+        const newTime = getCurrentModeDuration(newSettings) * 60;
+        setTimeLeft(newTime);
       }
     };
 
+    // Listen for custom storage events and regular storage events
     window.addEventListener('storage', handleStorageChange);
+    
     return () => window.removeEventListener('storage', handleStorageChange);
-  }, [isActive]);
+  }, [isActive, currentMode]);
+
+  // Update timeLeft when currentMode changes and timer is not active
+  useEffect(() => {
+    if (!isActive) {
+      setTimeLeft(getCurrentModeDuration(settings) * 60);
+    }
+  }, [currentMode, isActive, settings]);
 
   useEffect(() => {
     if (isActive && !isPaused) {
@@ -56,7 +68,7 @@ export function FocusTimer({ className }: FocusTimerProps) {
             // Save session data
             const sessionData = {
               date: new Date().toISOString().split('T')[0],
-              duration: getCurrentModeDuration(),
+              duration: getCurrentModeDuration(settings),
               type: currentMode
             };
             
@@ -74,7 +86,7 @@ export function FocusTimer({ className }: FocusTimerProps) {
               : 'focus';
             
             setCurrentMode(nextMode);
-            return getNextModeTime(nextMode);
+            return getNextModeTime(nextMode, settings);
           }
           return time - 1;
         });
@@ -90,21 +102,21 @@ export function FocusTimer({ className }: FocusTimerProps) {
         clearInterval(intervalRef.current);
       }
     };
-  }, [isActive, isPaused, currentMode, sessionsCompleted]);
+  }, [isActive, isPaused, currentMode, sessionsCompleted, settings]);
 
-  const getCurrentModeDuration = () => {
+  const getCurrentModeDuration = (currentSettings = settings) => {
     switch (currentMode) {
-      case 'focus': return settings.focusTime;
-      case 'shortBreak': return settings.shortBreak;
-      case 'longBreak': return settings.longBreak;
+      case 'focus': return currentSettings.focusTime;
+      case 'shortBreak': return currentSettings.shortBreak;
+      case 'longBreak': return currentSettings.longBreak;
     }
   };
 
-  const getNextModeTime = (mode: 'focus' | 'shortBreak' | 'longBreak') => {
+  const getNextModeTime = (mode: 'focus' | 'shortBreak' | 'longBreak', currentSettings = settings) => {
     switch (mode) {
-      case 'focus': return settings.focusTime * 60;
-      case 'shortBreak': return settings.shortBreak * 60;
-      case 'longBreak': return settings.longBreak * 60;
+      case 'focus': return currentSettings.focusTime * 60;
+      case 'shortBreak': return currentSettings.shortBreak * 60;
+      case 'longBreak': return currentSettings.longBreak * 60;
     }
   };
 
