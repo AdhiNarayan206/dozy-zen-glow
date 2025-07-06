@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
@@ -5,12 +6,53 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Slider } from '@/components/ui/slider';
 import { Settings as SettingsIcon } from 'lucide-react';
+import { useToast } from '@/hooks/use-toast';
 
 export function Settings() {
-  const [focusTime, setFocusTime] = useState([25]);
-  const [shortBreak, setShortBreak] = useState([5]);
-  const [longBreak, setLongBreak] = useState([15]);
-  const [wallpaper, setWallpaper] = useState('default');
+  const { toast } = useToast();
+  
+  // Load settings from localStorage or use defaults
+  const loadSettings = () => {
+    const saved = localStorage.getItem('dozy-settings');
+    if (saved) {
+      return JSON.parse(saved);
+    }
+    return {
+      focusTime: 25,
+      shortBreak: 5,
+      longBreak: 15,
+      wallpaper: 'default'
+    };
+  };
+
+  const [settings, setSettings] = useState(loadSettings());
+  const [focusTime, setFocusTime] = useState([settings.focusTime]);
+  const [shortBreak, setShortBreak] = useState([settings.shortBreak]);
+  const [longBreak, setLongBreak] = useState([settings.longBreak]);
+  const [wallpaper, setWallpaper] = useState(settings.wallpaper);
+
+  const handleSaveSettings = () => {
+    const newSettings = {
+      focusTime: focusTime[0],
+      shortBreak: shortBreak[0],
+      longBreak: longBreak[0],
+      wallpaper: wallpaper
+    };
+
+    // Save to localStorage
+    localStorage.setItem('dozy-settings', JSON.stringify(newSettings));
+    
+    // Update state
+    setSettings(newSettings);
+    
+    // Show success toast
+    toast({
+      title: "Settings Saved",
+      description: "Your preferences have been saved successfully.",
+    });
+
+    console.log('Settings saved:', newSettings);
+  };
 
   return (
     <div>
@@ -98,10 +140,7 @@ export function Settings() {
               <Button 
                 variant="zen" 
                 className="w-full font-zen"
-                onClick={() => {
-                  // Save settings logic would go here
-                  console.log('Settings saved:', { focusTime: focusTime[0], shortBreak: shortBreak[0], longBreak: longBreak[0], wallpaper });
-                }}
+                onClick={handleSaveSettings}
               >
                 Save Settings
               </Button>
