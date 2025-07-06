@@ -1,3 +1,4 @@
+
 import { useState, useEffect, useRef } from 'react';
 import { Button } from '@/components/ui/button';
 import { Play, Pause, RotateCcw } from 'lucide-react';
@@ -7,19 +8,73 @@ interface FocusTimerProps {
 }
 
 export function FocusTimer({ className }: FocusTimerProps) {
-  const [timeLeft, setTimeLeft] = useState(25 * 60); // 25 minutes in seconds
+  // Load settings from localStorage
+  const loadSettings = () => {
+    const saved = localStorage.getItem('dozy-settings');
+    if (saved) {
+      return JSON.parse(saved);
+    }
+    return {
+      focusTime: 25,
+      shortBreak: 5,
+      longBreak: 15,
+      wallpaper: 'default'
+    };
+  };
+
+  const [settings, setSettings] = useState(loadSettings());
+  const [timeLeft, setTimeLeft] = useState(settings.focusTime * 60);
   const [isActive, setIsActive] = useState(false);
   const [isPaused, setIsPaused] = useState(true);
+  const [currentMode, setCurrentMode] = useState<'focus' | 'shortBreak' | 'longBreak'>('focus');
+  const [sessionsCompleted, setSessions] = useState(0);
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
+
+  // Update timer when settings change
+  useEffect(() => {
+    const handleStorageChange = () => {
+      const newSettings = loadSettings();
+      setSettings(newSettings);
+      if (!isActive) {
+        setTimeLeft(newSettings.focusTime * 60);
+      }
+    };
+
+    window.addEventListener('storage', handleStorageChange);
+    return () => window.removeEventListener('storage', handleStorageChange);
+  }, [isActive]);
 
   useEffect(() => {
     if (isActive && !isPaused) {
       intervalRef.current = setInterval(() => {
         setTimeLeft((time) => {
           if (time <= 1) {
+            // Timer completed
             setIsActive(false);
             setIsPaused(true);
-            return 25 * 60; // Reset to 25 minutes
+            
+            // Save session data
+            const sessionData = {
+              date: new Date().toISOString().split('T')[0],
+              duration: getCurrentModeDuration(),
+              type: currentMode
+            };
+            
+            const existingSessions = JSON.parse(localStorage.getItem('dozy-sessions') || '[]');
+            existingSessions.push(sessionData);
+            localStorage.setItem('dozy-sessions', JSON.stringify(existingSessions));
+            
+            if (currentMode === 'focus') {
+              setSessions(prev => prev + 1);
+            }
+            
+            // Auto-switch to break mode
+            const nextMode = currentMode === 'focus' 
+              ? (sessionsCompleted % 4 === 3 ? 'longBreak' : 'shortBreak')
+              : 'focus';
+            
+            setCurrentMode(nextMode);
+            return getNextModeTime(nextMode);
           }
           return time - 1;
         });
@@ -35,7 +90,23 @@ export function FocusTimer({ className }: FocusTimerProps) {
         clearInterval(intervalRef.current);
       }
     };
-  }, [isActive, isPaused]);
+  }, [isActive, isPaused, currentMode, sessionsCompleted]);
+
+  const getCurrentModeDuration = () => {
+    switch (currentMode) {
+      case 'focus': return settings.focusTime;
+      case 'shortBreak': return settings.shortBreak;
+      case 'longBreak': return settings.longBreak;
+    }
+  };
+
+  const getNextModeTime = (mode: 'focus' | 'shortBreak' | 'longBreak') => {
+    switch (mode) {
+      case 'focus': return settings.focusTime * 60;
+      case 'shortBreak': return settings.shortBreak * 60;
+      case 'longBreak': return settings.longBreak * 60;
+    }
+  };
 
   const handleStart = () => {
     setIsActive(true);
@@ -49,7 +120,7 @@ export function FocusTimer({ className }: FocusTimerProps) {
   const handleReset = () => {
     setIsActive(false);
     setIsPaused(true);
-    setTimeLeft(25 * 60);
+    setTimeLeft(getCurrentModeDuration() * 60);
   };
 
   const formatTime = (seconds: number) => {
@@ -58,42 +129,68 @@ export function FocusTimer({ className }: FocusTimerProps) {
     return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
   };
 
-  const progress = ((25 * 60 - timeLeft) / (25 * 60)) * 100;
+  const progress = ((getCurrentModeDuration() * 60 - timeLeft) / (getCurrentModeDuration() * 60)) * 100;
+
+  const getModeLabel = () => {
+    switch (currentMode) {
+      case 'focus': return 'Focus Time';
+      case 'shortBreak': return 'Short Break';
+      case 'longBreak': return 'Long Break';
+    }
+  };
+
+  const getModeColor = () => {
+    switch (currentMode) {
+      case 'focus': return 'hsl(var(--primary))';
+      case 'shortBreak': return 'hsl(150 60% 50%)';
+      case 'longBreak': return 'hsl(200 60% 50%)';
+    }
+  };
 
   return (
     <div className={`zen-transition ${className}`}>
+      {/* Mode indicator */}
+      <div className="text-center mb-4">
+        <span className="text-sm font-zen text-muted-foreground uppercase tracking-widest">
+          {getModeLabel()}
+        </span>
+      </div>
+
       {/* Timer Circle */}
-      <div className="relative w-48 h-48 mx-auto mb-8">
+      <div className="relative w-64 h-64 mx-auto mb-8">
         <svg className="w-full h-full transform -rotate-90" viewBox="0 0 100 100">
           {/* Background circle */}
           <circle
             cx="50"
             cy="50"
-            r="42"
+            r="45"
             fill="none"
             stroke="hsl(var(--muted))"
-            strokeWidth="4"
+            strokeWidth="2"
             className="opacity-20"
           />
           {/* Progress circle */}
           <circle
             cx="50"
             cy="50"
-            r="42"
+            r="45"
             fill="none"
-            stroke="hsl(var(--primary))"
-            strokeWidth="4"
+            stroke={getModeColor()}
+            strokeWidth="3"
             strokeLinecap="round"
-            strokeDasharray={`${2 * Math.PI * 42}`}
-            strokeDashoffset={`${2 * Math.PI * 42 * (1 - progress / 100)}`}
-            className="zen-transition opacity-80"
+            strokeDasharray={`${2 * Math.PI * 45}`}
+            strokeDashoffset={`${2 * Math.PI * 45 * (1 - progress / 100)}`}
+            className="zen-transition"
           />
         </svg>
         
         {/* Timer display */}
-        <div className="absolute inset-0 flex items-center justify-center">
-          <span className="text-4xl font-light text-foreground font-zen tracking-wider">
+        <div className="absolute inset-0 flex flex-col items-center justify-center">
+          <span className="text-5xl font-light text-foreground font-zen tracking-wider mb-1">
             {formatTime(timeLeft)}
+          </span>
+          <span className="text-xs text-muted-foreground font-zen uppercase tracking-wide">
+            Session {sessionsCompleted + 1}
           </span>
         </div>
       </div>
@@ -103,11 +200,11 @@ export function FocusTimer({ className }: FocusTimerProps) {
         {!isActive || isPaused ? (
           <Button
             onClick={handleStart}
-            variant="default"
             size="lg"
-            className="zen-transition zen-shadow rounded-full px-8 py-3 font-zen"
+            className="zen-transition zen-shadow rounded-full px-12 py-4 font-zen text-base h-14"
+            style={{ backgroundColor: getModeColor() }}
           >
-            <Play className="w-5 h-5 mr-2" />
+            <Play className="w-5 h-5 mr-3" />
             {!isActive ? 'Start' : 'Resume'}
           </Button>
         ) : (
@@ -115,9 +212,9 @@ export function FocusTimer({ className }: FocusTimerProps) {
             onClick={handlePause}
             variant="secondary"
             size="lg"
-            className="zen-transition zen-shadow rounded-full px-8 py-3 font-zen"
+            className="zen-transition zen-shadow rounded-full px-12 py-4 font-zen text-base h-14"
           >
-            <Pause className="w-5 h-5 mr-2" />
+            <Pause className="w-5 h-5 mr-3" />
             Pause
           </Button>
         )}
@@ -126,10 +223,9 @@ export function FocusTimer({ className }: FocusTimerProps) {
           onClick={handleReset}
           variant="outline"
           size="lg"
-          className="zen-transition rounded-full px-8 py-3 font-zen"
+          className="zen-transition rounded-full px-8 py-4 font-zen text-base h-14"
         >
-          <RotateCcw className="w-5 h-5 mr-2" />
-          Reset
+          <RotateCcw className="w-5 h-5" />
         </Button>
       </div>
     </div>
