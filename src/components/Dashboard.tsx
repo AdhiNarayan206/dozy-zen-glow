@@ -4,9 +4,22 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Clock, Target, Calendar, TrendingUp } from 'lucide-react';
 
+interface Session {
+  date: string;
+  duration: number;
+  type: 'focus' | 'break';
+}
+
+interface Stats {
+  todayMinutes: number;
+  weekMinutes: number;
+  totalSessions: number;
+  streak: number;
+}
+
 export function Dashboard() {
-  const [sessions, setSessions] = useState([]);
-  const [stats, setStats] = useState({
+  const [sessions, setSessions] = useState<Session[]>([]);
+  const [stats, setStats] = useState<Stats>({
     todayMinutes: 0,
     weekMinutes: 0,
     totalSessions: 0,
@@ -15,7 +28,7 @@ export function Dashboard() {
 
   useEffect(() => {
     const loadStats = () => {
-      const sessionData = JSON.parse(localStorage.getItem('dozy-sessions') || '[]');
+      const sessionData: Session[] = JSON.parse(localStorage.getItem('dozy-sessions') || '[]');
       setSessions(sessionData);
 
       const today = new Date().toISOString().split('T')[0];
@@ -65,7 +78,7 @@ export function Dashboard() {
     return () => window.removeEventListener('storage', handleStorageChange);
   }, []);
 
-  const formatTime = (minutes) => {
+  const formatTime = (minutes: number) => {
     const hours = Math.floor(minutes / 60);
     const mins = minutes % 60;
     if (hours > 0) {
